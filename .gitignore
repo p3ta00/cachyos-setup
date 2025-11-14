@@ -1,0 +1,37 @@
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+*~
+
+# Compressed archives
+*.tar.gz
+*.zip
+*.7z
+*.rar
+
+# Logs
+*.log
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Private/sensitive data
+secrets/
+private/
+.env
+*.key
+*.pem

@@ -1,0 +1,19 @@
+# Ghostty Configuration - Dracula Theme
+
+# Font
+font-family = "JetBrainsMono Nerd Font"
+font-size = 12
+
+theme = dracula
+background-opacity = 0.3
+# Window
+window-padding-x = 10
+window-padding-y = 10
+window-theme = dark
+gtk-titlebar = false
+# Shell
+shell-integration = zsh
+
+# Misc
+confirm-close-surface = false
+keybind = shift+enter=text:\x1b\r
