@@ -167,6 +167,42 @@ else
     exit 1
 fi
 
+# Fix Wayland compatibility
+log_info "Configuring Wayland compatibility..."
+CURRENT_USER=$(logname 2>/dev/null || who am i | awk '{print $1}')
+USER_HOME=$(eval echo ~$CURRENT_USER)
+
+# Create desktop entry override for Wayland
+mkdir -p "$USER_HOME/.local/share/applications"
+cat > "$USER_HOME/.local/share/applications/vmware-workstation.desktop" <<'DESKTOP_EOF'
+[Desktop Entry]
+Encoding=UTF-8
+Name=VMware Workstation
+Comment=Run and manage virtual machines
+Exec=env GDK_BACKEND=x11 /usr/bin/vmware %U
+Terminal=false
+Type=Application
+Icon=vmware-workstation
+StartupNotify=true
+Categories=System;
+MimeType=application/x-vmware-vm;application/x-vmware-team;application/x-vmware-enc-vm;x-scheme-handler/vmrc;
+DESKTOP_EOF
+
+# Update desktop database
+if command -v update-desktop-database &>/dev/null; then
+    sudo -u "$CURRENT_USER" update-desktop-database "$USER_HOME/.local/share/applications" 2>/dev/null || true
+fi
+
+# Add shell alias for command-line launches
+if [ -f "$USER_HOME/.zshrc" ]; then
+    if ! grep -q "alias vmware=" "$USER_HOME/.zshrc"; then
+        echo 'alias vmware="GDK_BACKEND=x11 /usr/bin/vmware"' >> "$USER_HOME/.zshrc"
+        log_info "Added vmware alias to .zshrc for Wayland compatibility"
+    fi
+fi
+
+chown -R "$CURRENT_USER:$CURRENT_USER" "$USER_HOME/.local/share/applications" 2>/dev/null || true
+
 # Cleanup
 log_info "Cleaning up build directory..."
 rm -rf "$BUILD_DIR"
@@ -185,6 +221,7 @@ log_info "You can launch VMware Workstation with:"
 echo "  - GUI: vmware"
 echo "  - Player: vmplayer"
 echo
+log_info "Note: VMware is configured to use X11 for Wayland compatibility"
 log_info "To check service status: systemctl status vmware"
 echo
 
