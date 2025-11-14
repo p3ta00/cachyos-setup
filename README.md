@@ -1,10 +1,18 @@
-# CachyOS Shell Environment Setup
+# CachyOS Setup Scripts
 
-A comprehensive shell environment setup script for CachyOS (or any Arch-based distro) featuring modern CLI tools, Dracula theming, and a beautiful terminal experience.
+A collection of installation and setup scripts for CachyOS Linux, featuring modern CLI tools, shell environment setup with Dracula theming, and system configuration scripts.
 
-## Features
+## Scripts
 
-### Modern CLI Tools
+### Shell Environment Setup
+
+A comprehensive shell environment setup script featuring modern CLI tools, Dracula theming, and a beautiful terminal experience.
+
+**File:** `install.sh`
+
+#### Features
+
+##### Modern CLI Tools
 - **eza** - Modern replacement for `ls` with git integration and icons
 - **bat** - Better `cat` with syntax highlighting (Dracula theme)
 - **fd** - Faster and more user-friendly alternative to `find`
@@ -22,7 +30,7 @@ A comprehensive shell environment setup script for CachyOS (or any Arch-based di
 - **hyperfine** - Command-line benchmarking tool
 - **tokei** - Code statistics tool
 
-### Development Tools
+##### Development Tools
 - **neovim** - Modern vim-based text editor
 - **NvChad** - Blazing fast Neovim config
 - **lazygit** - Simple terminal UI for git
@@ -31,39 +39,79 @@ A comprehensive shell environment setup script for CachyOS (or any Arch-based di
 - **zellij** - Terminal workspace with layouts (Dracula theme)
 - **navi** - Interactive cheatsheet tool
 
-### Shell Environment
+##### Shell Environment
 - **zsh** - Powerful shell with Oh-My-Zsh
 - **oh-my-zsh** - Framework for managing zsh configuration
 - **zsh-syntax-highlighting** - Fish-like syntax highlighting
 - **zsh-autosuggestions** - Fish-like autosuggestions
 - **Ghostty** - Fast, native terminal emulator (Dracula theme)
 
-### Theming
-All tools are configured with **Dracula theme** for a consistent, beautiful dark theme experience.
+### VMware Workstation Installation
 
-## Directory Structure
+**File:** `install-vmware-workstation.sh`
 
+Automated installation script for VMware Workstation on CachyOS. This script:
+- Installs VMware Workstation from the official bundle
+- Builds kernel modules (vmmon, vmnet) with clang/lld to match CachyOS kernel
+- Loads kernel modules and starts services
+- Verifies installation
+
+#### Prerequisites
+
+- CachyOS Linux
+- VMware Workstation bundle file (download from VMware website)
+- Root/sudo access
+
+#### Usage
+
+```bash
+# Download VMware Workstation bundle from https://www.vmware.com/products/workstation-pro.html
+
+# Make the script executable
+chmod +x install-vmware-workstation.sh
+
+# Run with sudo (auto-detects bundle in ~/Downloads)
+sudo ./install-vmware-workstation.sh
+
+# Or specify bundle path explicitly
+sudo ./install-vmware-workstation.sh /path/to/VMware-Workstation-Full-*.bundle
 ```
-cachyos-setup/
-├── install.sh           # Main installation script
-├── README.md            # This file
-├── dotfiles/            # Shell configuration files
-│   ├── .zshrc          # Main zsh configuration
-│   ├── .zshenv         # Zsh environment variables
-│   ├── .bashrc         # Bash configuration (fallback)
-│   ├── .bash_logout    # Bash logout script
-│   ├── .profile        # Profile configuration
-│   └── .zsh/           # Zsh completions
-├── config/              # Application configurations
-│   ├── starship.toml   # Starship prompt config
-│   ├── zellij/         # Zellij workspace config
-│   ├── yazi/           # Yazi file manager config
-│   ├── fastfetch/      # Fastfetch system info config
-│   └── htop/           # Htop config
-└── fonts/               # JetBrains Mono Nerd Font
-```
 
-## Installation
+#### What it does
+
+1. Checks for required packages (kernel headers, build tools, clang, lld)
+2. Installs missing dependencies via pacman
+3. Runs VMware Workstation installer
+4. Builds vmmon and vmnet kernel modules using clang (matching CachyOS kernel compiler)
+5. Installs and loads kernel modules
+6. Enables and starts VMware services
+7. Verifies everything is working
+
+#### Troubleshooting
+
+If the installation fails:
+
+1. Check kernel headers are installed:
+   ```bash
+   pacman -Q linux-cachyos-headers
+   ```
+
+2. Verify build tools:
+   ```bash
+   pacman -Q base-devel clang lld
+   ```
+
+3. Check VMware service status:
+   ```bash
+   systemctl status vmware
+   ```
+
+4. Verify kernel modules:
+   ```bash
+   lsmod | grep -E "vmmon|vmnet"
+   ```
+
+## Shell Environment Installation
 
 ### Prerequisites
 - A fresh CachyOS installation (or Arch-based distro)
@@ -103,230 +151,14 @@ The installation script will:
 
 **Note:** The script will automatically backup your existing configurations to `~/.config_backup_<timestamp>/`
 
-## Post-Installation
+## Contributing
 
-After the installation completes:
-
-1. **Logout and login** (or reboot) to apply the shell changes
-2. **Open Ghostty terminal** to experience your new setup
-3. **Run `nvim`** for the first time to complete NvChad plugin installation
-4. **Enjoy your new environment!**
-
-## Key Features & Usage
-
-### Enhanced Shell Commands
-
-The new `.zshrc` includes many convenient aliases:
-
-#### File Operations
-```bash
-ls        # eza with icons and colors
-ll        # eza long format
-la        # eza show all files
-lt        # eza tree view
-cat       # bat with syntax highlighting
-```
-
-#### Navigation
-```bash
-cd <dir>  # Uses zoxide (learns your habits)
-..        # Go up one directory
-...       # Go up two directories
-mkcd      # Create directory and cd into it
-```
-
-#### System Monitoring
-```bash
-top       # Opens btop
-du        # Uses dust
-df        # Uses duf
-ps        # Uses procs
-```
-
-#### Git
-```bash
-lg        # Opens lazygit
-gs        # git status
-ga        # git add
-gc        # git commit
-gd        # git diff (with delta)
-```
-
-#### Utilities
-```bash
-help      # Uses tldr for quick examples
-zconfig   # Edit .zshrc
-nconfig   # Edit nvim config
-sconfig   # Edit starship config
-zj        # Start zellij with dracula theme
-```
-
-### Atuin Shell History
-
-Press `Ctrl+R` to search through your shell history with atuin's powerful interface.
-
-### FZF Fuzzy Finding
-
-- `Ctrl+T` - Search for files
-- `Ctrl+R` - Search command history (atuin)
-- `Alt+C` - Change directory with fuzzy search
-
-### Starship Prompt
-
-The starship prompt shows:
-- Current directory
-- Git branch and status
-- Programming language versions (Python, Node, Rust, Go, etc.)
-- Docker context
-- Custom git remote icons (GitHub, GitLab, etc.)
-
-### Zellij Terminal Workspace
-
-Start zellij with Dracula theme:
-```bash
-zj
-```
-
-Key bindings:
-- `Ctrl+O` - Open zellij commands
-- `Ctrl+T` - New tab
-- `Ctrl+P` - New pane
-- `Ctrl+N` - Switch panes
-
-## Customization
-
-### Change Themes
-
-All configurations support Dracula theme by default, but you can customize:
-
-- **Starship**: Edit `~/.config/starship.toml`
-- **Ghostty**: Edit `~/.config/ghostty/config`
-- **Zellij**: Edit `~/.config/zellij/config.kdl`
-- **Bat**: Change `BAT_THEME` in `.zshrc`
-- **FZF**: Modify `FZF_DEFAULT_OPTS` in `.zshrc`
-
-### Add More Tools
-
-To add more Rust-based tools:
-```bash
-cargo install <tool-name>
-```
-
-## Troubleshooting
-
-### Fonts not showing correctly
-```bash
-fc-cache -f ~/.local/share/fonts
-```
-
-### Zsh not default shell
-```bash
-chsh -s $(which zsh)
-```
-
-### Cargo tools not in PATH
-Add to `.zshrc`:
-```bash
-export PATH="$HOME/.cargo/bin:$PATH"
-```
-
-### NvChad plugins not loading
-```bash
-nvim
-# Wait for installation to complete
-# Press Enter when prompted
-```
-
-## Included Configurations
-
-### .zshrc Features
-- Oh-My-Zsh with plugins
-- Starship prompt
-- Zoxide integration
-- Dracula theme for fzf, bat
-- Atuin history search
-- Modern CLI tool aliases
-- Helpful functions (extract, mkcd)
-- Git aliases
-- Custom completions support
-
-### Starship Configuration
-- Minimalist design
-- Git integration with custom icons
-- Language detection (Python, Node, Rust, Go, etc.)
-- Custom git remote symbols
-- Dracula color scheme
-
-### Ghostty Configuration
-- Dracula color scheme
-- JetBrains Mono Nerd Font
-- Custom padding
-- Shell integration
-- No close confirmation
-
-## Package List
-
-### System Packages (pacman)
-```
-zsh git curl wget base-devel fzf ripgrep bat fd xclip htop
-ruby rubygems python python-pip fontconfig unzip neovim go
-```
-
-### Cargo Tools
-```
-starship zoxide yazi-fm yazi-cli zellij navi eza bat fd-find
-dust duf procs bottom sd tealdeer git-delta atuin hyperfine tokei
-```
-
-### Additional Tools
-- lazygit
-- btop
-- ghostty (via AUR)
-
-## Backup Information
-
-The install script automatically backs up:
-- All existing dotfiles in your home directory
-- All existing configs in `~/.config/`
-
-Backups are stored in: `~/.config_backup_<timestamp>/`
-
-## Manual Installation Steps
-
-If you prefer to install components individually:
-
-1. **Install Rust**:
-   ```bash
-   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-   ```
-
-2. **Install Oh-My-Zsh**:
-   ```bash
-   sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-   ```
-
-3. **Install a tool via cargo**:
-   ```bash
-   cargo install <tool-name>
-   ```
-
-4. **Copy configs**:
-   ```bash
-   cp dotfiles/.zshrc ~/
-   cp -r config/* ~/.config/
-   ```
-
-## Credits
-
-- **Dracula Theme**: https://draculatheme.com/
-- **NvChad**: https://nvchad.com/
-- **Starship**: https://starship.rs/
-- **Oh-My-Zsh**: https://ohmyz.sh/
+Feel free to submit issues or pull requests for improvements.
 
 ## License
 
-Free to use and modify for personal use.
+MIT License - Feel free to use and modify these scripts.
 
 ---
 
-**Enjoy your beautiful new shell environment! 🚀**
+**Enjoy your CachyOS setup! 🚀**
